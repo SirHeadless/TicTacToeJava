@@ -1,0 +1,45 @@
+.test {
+    margin-left: 10em;
+}
+
+/* .field {
+    width: 80px;
+    height: 80px;
+    border: 1px solid black;
+}
+
+
+.board {
+    border: 2px solid black;
+} */
+
+table {
+    border-collapse: collapse;
+}
+
+.TicTacToe td {
+    width: 80px;
+    height: 80px;
+    border: 1px solid black;
+}
+
+
+.TicTacToe tbody {
+    border: 2px solid black;
+
+}
+
+.field {
+    font-family: "Roboto", sans-serif;
+    font-size:  4em;
+    position: relative;
+}
+
+.field p {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%) 
+}
