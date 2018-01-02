@@ -3,7 +3,7 @@ import {Interfaces} from "./interfaces";
 import { MsgHandler } from "./MsgHandler"
 
 export class WebSocketConnector {
-    private Stomp = require('stompjs/lib/stomp').Stomp;
+    private Stomp = require('stompjs/lib/stomp').Stomp; 
 
     private socket = new SockJS('/gs-guide-websocket');
     private stompClient = this.Stomp.over(this.socket);
@@ -20,7 +20,8 @@ export class WebSocketConnector {
             }.bind(this));
             this.stompClient.subscribe('/toClient/newGame', function (player: any) {
                 console.log("THIS SHOULD BE EXECUTED");
-                MsgHandler.newGame(JSON.parse(player.body), this.game)
+                MsgHandler.newGame(JSON.parse(player.body), this.game);
+            
             }.bind(this));
         }.bind(this))
     }
@@ -39,6 +40,10 @@ export class WebSocketConnector {
         //     $("#conversation").hide();
         // }
         // $("#greetings").html("");
+    }
+
+    getStompClient() : WebSocketConnector{
+        return this.stompClient;
     }
 
     sendField(fieldNr: number) {

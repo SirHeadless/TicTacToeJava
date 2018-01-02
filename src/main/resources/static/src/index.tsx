@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as SockJS from "sockjs-client";
 
 import "./components/Hello.tsx";
 import { Game } from "./components/Game";
@@ -22,7 +23,7 @@ class Field extends React.Component<any, any> {
 
     handleClick() {
         console.log("Board: " + this.props.game.board)
-        this.props.wsClient.sendField(this.keyNr);
+        this.props.wsClient.send("/toServer/setField", {}, JSON.stringify({'field': this.keyNr}));
         this.setState({game : this.props.game})
     }
     render() {
@@ -39,7 +40,7 @@ class Title extends React.Component<any, any> {
 
 class NewGameButton extends React.Component<any, any> {
     handleClick() {
-        this.props.wsClient.sendNewGame();
+        this.props.wsClient.send("/toServer/newGame");
         this.props.game.newGame()
     }
     render() {
@@ -108,7 +109,10 @@ class ContainerView extends React.Component {
     // game : IGame = null;
     // wsClient : WebSocketConnector = null;
     game = new Game();
-    wsClient = new WebSocketConnector(this.game);
+    private Stomp = require('stompjs/lib/stomp').Stomp; 
+    
+    private socket = new SockJS('/gs-guide-websocket');
+    private wsClient = this.Stomp.over(this.socket);
 
     waitForSocketConnection(socket: any, callback: any) {
 
@@ -130,6 +134,21 @@ class ContainerView extends React.Component {
     }
 
     componentDidMount() {
+
+        this.wsClient.connect({}, function (frame: any) {
+            // this.setConnected(true);
+            console.log('Connected: ' + frame);
+            this.wsClient.subscribe('/toClient/setField', function (field: any) {
+                console.log("THIS SHOULD BE EXECUTED");
+                MsgHandler.setField(JSON.parse(field.body), this.game);
+                this.setState(this.game)
+            }.bind(this));
+            this.wsClient.subscribe('/toClient/newGame', function (player: any) {
+                console.log("THIS SHOULD BE EXECUTED");
+                MsgHandler.newGame(JSON.parse(player.body), this.game);
+            
+            }.bind(this));
+        }.bind(this))
 
 
         // this.waitForSocketConnection(wsClient, function () {
