@@ -1,6 +1,6 @@
 package com.sirheadless.kt
 
-import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.*
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.web.socket.config.annotation.*
 import java.util.logging.Logger
@@ -17,8 +17,6 @@ import java.util.logging.Logger
 @EnableWebSocketMessageBroker
 open class XWebSocketConfigOLD : AbstractWebSocketMessageBrokerConfigurer() {
 	val logger = Logger.getLogger(XWebSocketConfigOLD::class.java.toString())
-
-
 
 	override fun registerStompEndpoints(registry: StompEndpointRegistry?) {
 		logger.info("Connected to StompEndpoint")

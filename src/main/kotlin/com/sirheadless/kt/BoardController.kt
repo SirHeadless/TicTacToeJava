@@ -2,6 +2,7 @@ package com.sirheadless.kt
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.*
+import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.stereotype.Controller
 import java.util.logging.Logger
 
@@ -14,12 +15,21 @@ import java.util.logging.Logger
  */
 
 @Controller
-open class BoardController{
+open class BoardController
+
+@Autowired
+constructor(private val messagingTemplate: SimpMessageSendingOperations)
+
+{
 
 	val logger = Logger.getLogger(BoardController::class.java.toString())
 
 	@Autowired
 	lateinit  var board: Board;
+
+
+
+
 
 	@MessageMapping("/setField")
 	@SendTo("/toClient/setField")
