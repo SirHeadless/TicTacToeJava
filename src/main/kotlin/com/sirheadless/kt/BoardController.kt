@@ -3,6 +3,8 @@ package com.sirheadless.kt
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.*
 import org.springframework.messaging.simp.SimpMessageSendingOperations
+import org.springframework.messaging.simp.annotation.SubscribeMapping
+
 import org.springframework.stereotype.Controller
 import java.util.logging.Logger
 
@@ -28,7 +30,12 @@ constructor(private val messagingTemplate: SimpMessageSendingOperations)
 	lateinit  var board: Board;
 
 
-
+	@SubscribeMapping("/join")
+	fun join() : FieldMessage {
+logger.info("Somebody joined !!!")
+		val returnMessage: FieldMessage = FieldMessage(9, "x")
+		return returnMessage
+	}
 
 
 	@MessageMapping("/setField")
