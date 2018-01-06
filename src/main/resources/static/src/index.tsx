@@ -148,6 +148,11 @@ class ContainerView extends React.Component {
                 MsgHandler.newGame(JSON.parse(player.body), this.game);
             
             }.bind(this));
+            this.wsClient.subscribe('/toClient/join', function (field: any) {
+                console.log("THIS SHOULD BE EXECUTED");
+                MsgHandler.setField(JSON.parse(field.body), this.game);
+                this.setState(this.game)
+            }.bind(this));
         }.bind(this))
 
 

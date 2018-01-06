@@ -10,16 +10,15 @@ package com.sirheadless.kt.game
 class GamesManager {
 
 	companion object {
-		private var openGame : Game? = null
+		private var waitingUser: String? = null
 
 		val games : MutableList<Game>  = mutableListOf();
 
 		fun addUser(user : String) {
-			if (openGame != null ){
-				openGame!!.addUser(user);
+			if (waitingUser != null ){
+				games.add(Game(waitingUser!!, user))
 			} else {
-				openGame = Game(user);
-				games.add(openGame!!);
+				waitingUser = user
 			}
 		}
 

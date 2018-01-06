@@ -7,12 +7,10 @@ package com.sirheadless.kt.game
  * Time: 5:49 PM
  * Test
  */
-class Game(val user: String){
-	fun addUser(user: String) {
-
-	}
+class Game(val playerX: String, val playerY: String){
 
 	fun hasUser(user: String) :Boolean {
-		return true;
+		return playerX.equals(user) || playerY.equals(user)
 	}
+
 }
