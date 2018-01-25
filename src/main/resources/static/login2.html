@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Spring Security Example </title>
+</head>
+<body>
+
+<form name='f' action="/perform_login" method='POST'>
+    <table>
+        <tr>
+            <td>User:</td>
+            <td><input type='text' name='username' value="u"></td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td><input type='password' name='password' value="1"/></td>
+        </tr>
+        <tr>
+            <td><input name="submit" type="submit" value="Login" /></td>
+        </tr>
+    </table>
+</form>
+
+<!--<form action="perform_logins" method="post">-->
+    <!--<div><label> User Name : <input type="text" name="username" value="user"/> </label></div>-->
+    <!--<div><label> Password: <input type="password" name="password" value="password"/> </label></div>-->
+    <!--<div><input type="submit" value="Sign In"/></div>-->
+<!--</form>-->
+</body>
+</html>

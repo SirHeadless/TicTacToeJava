@@ -13,4 +13,8 @@ class Game(val playerX: String, val playerY: String){
 		return playerX.equals(user) || playerY.equals(user)
 	}
 
+    fun getAllUser() : List<String> {
+        return listOf(playerX,playerY)
+    }
+
 }

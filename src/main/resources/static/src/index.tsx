@@ -32,6 +32,20 @@ class Field extends React.Component<any, any> {
     }
 };
 
+class Login extends React.Component<any, any> {
+    render() {
+        return (
+            <div>
+                <form method="post" action="login">
+                    <label> User Name : <input type="text" name="username" value="user"/> </label>
+                    <label> Password: <input type="password" name="password" value="password"/> </label>
+                    <input type="submit" value="Sign In"/>
+                </form>
+            </div>
+        )
+    }
+}
+
 class Title extends React.Component<any, any> {
     render() {
         return <h2> {TITLE} </h2>
@@ -144,7 +158,7 @@ class ContainerView extends React.Component {
                 this.setState(this.game)
             }.bind(this));
             this.wsClient.subscribe('/toClient/newGame', function (player: any) {
-                console.log("THIS SHOULD BE EXECUTED");
+                console.log("THIS SHOULD BE EXECUTED NEW GAME");
                 MsgHandler.newGame(JSON.parse(player.body), this.game);
             
             }.bind(this));
@@ -175,6 +189,7 @@ class ContainerView extends React.Component {
         return (
             <div>
                 <Title />
+                <Login/>
                 <StatusMsg status={this.game.status} player={this.game.player} finished={this.game.finished} />
                 <NewGameButton game={this.game} wsClient={this.wsClient}/>
                 <Board game={this.game} wsClient = {this.wsClient}/>
