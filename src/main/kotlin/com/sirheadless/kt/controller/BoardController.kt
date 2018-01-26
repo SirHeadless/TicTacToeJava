@@ -2,7 +2,9 @@ package com.sirheadless.kt.controller
 
 import com.sirheadless.kt.Board
 import com.sirheadless.kt.Messages.FieldMessage
+import com.sirheadless.kt.Messages.NewGameMessage
 import com.sirheadless.kt.Player
+import com.sirheadless.kt.game.Game
 import com.sirheadless.kt.game.GamesManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.*
@@ -51,10 +53,20 @@ constructor(private val messagingTemplate: SimpMessageSendingOperations) {
 
     @MessageMapping("/newGame")
     @SendTo("/toClient/newGame")
-    fun newGame(test: String): String {
+    fun newGame(): String {
         logger.info("New game")
         return ""
     }
 
+    @MessageMapping("/findOpponent")
+    fun findOpponent(principal: Principal): String {
+        logger.info("Looking for opponent for ${principal.name}")
+        var game: Game? = GamesManager.addUserToGame(principal.name)
+        if (game != null)  {
+            messagingTemplate.convertAndSendToUser(game!!.playerX, "/toClient/newGame", NewGameMessage("x"))
+            messagingTemplate.convertAndSendToUser(game!!.playerY, "/toClient/newGame", NewGameMessage("y"))
+        }
+        return ""
+    }
 
 }

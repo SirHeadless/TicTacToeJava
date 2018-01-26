@@ -52,6 +52,23 @@ class Title extends React.Component<any, any> {
     }
 }
 
+
+class FindOpponentButton extends React.Component<any, any> {
+    handleClick() {
+        this.props.wsClient.send("/toServer/findOpponent");
+        this.props.game.newGame()
+    }
+    render() {
+        return (
+            <div>
+                <button onClick={this.handleClick.bind(this)}>
+                 Find Opponent Game
+                </button>
+            </div>
+        )
+    }
+}
+
 class NewGameButton extends React.Component<any, any> {
     handleClick() {
         this.props.wsClient.send("/toServer/newGame");
@@ -167,6 +184,11 @@ class ContainerView extends React.Component {
                 MsgHandler.setField(JSON.parse(field.body), this.game);
                 this.setState(this.game)
             }.bind(this));
+            this.wsClient.subscribe('/toClient/opponentFound', function (field: any) {
+                console.log("THIS SHOULD BE EXECUTED");
+                MsgHandler.setField(JSON.parse(field.body), this.game);
+                this.setState(this.game)
+            }.bind(this));
         }.bind(this))
 
 
@@ -190,6 +212,7 @@ class ContainerView extends React.Component {
             <div>
                 <Title />
                 <Login/>
+                <FindOpponentButton game={this.game} wsClient={this.wsClient}/>
                 <StatusMsg status={this.game.status} player={this.game.player} finished={this.game.finished} />
                 <NewGameButton game={this.game} wsClient={this.wsClient}/>
                 <Board game={this.game} wsClient = {this.wsClient}/>
