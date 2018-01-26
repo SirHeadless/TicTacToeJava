@@ -1,10 +1,5 @@
 package com.sirheadless.kt.game
 
-import com.sirheadless.kt.Messages.NewGameMessage
-import com.sirheadless.kt.controller.TestController
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.messaging.simp.SimpMessageSendingOperations
-
 /**
  * Created by
  * User: creuter

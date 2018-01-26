@@ -2,15 +2,17 @@ package com.sirheadless.kt.controller
 
 import com.sirheadless.kt.Board
 import com.sirheadless.kt.Messages.FieldMessage
+import com.sirheadless.kt.Messages.NewGameMessage
 import com.sirheadless.kt.Player
+import com.sirheadless.kt.game.Game
 import com.sirheadless.kt.game.GamesManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.*
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.annotation.SubscribeMapping
+import org.springframework.stereotype.*
 
-import org.springframework.stereotype.Controller
 import java.security.Principal
 import java.util.logging.Logger
 
@@ -41,7 +43,7 @@ constructor(private val messagingTemplate: SimpMessageSendingOperations) {
 
 
     @MessageMapping("/setField")
-    @SendTo("/toClient/setField")
+    @SendTo("/topic/setField")
     fun setField(headerAccessor: SimpMessageHeaderAccessor, fieldMessage: FieldMessage): FieldMessage {
         board.setField(fieldMessage.field.toInt(), Player.PLAYERX)
         val returnMessage: FieldMessage = FieldMessage(fieldMessage.field, "x")
@@ -50,11 +52,21 @@ constructor(private val messagingTemplate: SimpMessageSendingOperations) {
     }
 
     @MessageMapping("/newGame")
-    @SendTo("/toClient/newGame")
-    fun newGame(test: String): String {
+    @SendTo("/topic/newGame")
+    fun newGame(): String {
         logger.info("New game")
         return ""
     }
 
+    @MessageMapping("/findOpponent")
+    fun findOpponent(principal: Principal): String {
+        logger.info("Looking for opponent for ${principal.name}")
+        var game: Game? = GamesManager.addUserToGame(principal.name)
+        if (game != null)  {
+            messagingTemplate.convertAndSendToUser(game!!.playerX, "/topic/newGame", NewGameMessage("x", game!!.playerY))
+            messagingTemplate.convertAndSendToUser(game!!.playerY, "/topic/newGame", NewGameMessage("y", game!!.playerX))
+        }
+        return ""
+    }
 
 }

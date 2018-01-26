@@ -52,6 +52,22 @@ class Title extends React.Component<any, any> {
     }
 }
 
+
+class FindOpponentButton extends React.Component<any, any> {
+    handleClick() {
+        this.props.wsClient.send("/toServer/findOpponent");
+    }
+    render() {
+        return (
+            <div>
+                <button onClick={this.handleClick.bind(this)}>
+                 Find Opponent Game
+                </button>
+            </div>
+        )
+    }
+}
+
 class NewGameButton extends React.Component<any, any> {
     handleClick() {
         this.props.wsClient.send("/toServer/newGame");
@@ -152,17 +168,27 @@ class ContainerView extends React.Component {
         this.wsClient.connect({}, function (frame: any) {
             // this.setConnected(true);
             console.log('Connected: ' + frame);
-            this.wsClient.subscribe('/toClient/setField', function (field: any) {
+            this.wsClient.subscribe('/topic/setField', function (field: any) {
                 console.log("THIS SHOULD BE EXECUTED");
                 MsgHandler.setField(JSON.parse(field.body), this.game);
                 this.setState(this.game)
             }.bind(this));
-            this.wsClient.subscribe('/toClient/newGame', function (player: any) {
+            this.wsClient.subscribe('/topic/newGame', function (player: any) {
                 console.log("THIS SHOULD BE EXECUTED NEW GAME");
                 MsgHandler.newGame(JSON.parse(player.body), this.game);
             
             }.bind(this));
-            this.wsClient.subscribe('/toClient/join', function (field: any) {
+            this.wsClient.subscribe('/user/topic/newGame', function (player: any) {
+                console.log("THIS SHOULD BE EXECUTED NEW GAME");
+                MsgHandler.newGame(JSON.parse(player.body), this.game);
+            
+            }.bind(this));
+            this.wsClient.subscribe('/topic/join', function (field: any) {
+                console.log("THIS SHOULD BE EXECUTED");
+                MsgHandler.setField(JSON.parse(field.body), this.game);
+                this.setState(this.game)
+            }.bind(this));
+            this.wsClient.subscribe('/topic/opponentFound', function (field: any) {
                 console.log("THIS SHOULD BE EXECUTED");
                 MsgHandler.setField(JSON.parse(field.body), this.game);
                 this.setState(this.game)
@@ -190,6 +216,7 @@ class ContainerView extends React.Component {
             <div>
                 <Title />
                 <Login/>
+                <FindOpponentButton game={this.game} wsClient={this.wsClient}/>
                 <StatusMsg status={this.game.status} player={this.game.player} finished={this.game.finished} />
                 <NewGameButton game={this.game} wsClient={this.wsClient}/>
                 <Board game={this.game} wsClient = {this.wsClient}/>

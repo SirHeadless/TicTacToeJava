@@ -14,11 +14,16 @@ export class WebSocketConnector {
         this.stompClient.connect({}, function (frame: any) {
             // this.setConnected(true);
             console.log('Connected: ' + frame);
-            this.stompClient.subscribe('/toClient/setField', function (field: any) {
+            this.stompClient.subscribe('/topic/setField', function (field: any) {
                 console.log("THIS SHOULD BE EXECUTED");
                 MsgHandler.setField(JSON.parse(field.body), this.game);
             }.bind(this));
-            this.stompClient.subscribe('/toClient/newGame', function (player: any) {
+            this.stompClient.subscribe('/topic/newGame', function (player: any) {
+                console.log("THIS SHOULD BE EXECUTED");
+                MsgHandler.newGame(JSON.parse(player.body), this.game);
+            
+            }.bind(this));
+            this.stompClient.subscribe('/user/topic/newGame', function (player: any) {
                 console.log("THIS SHOULD BE EXECUTED");
                 MsgHandler.newGame(JSON.parse(player.body), this.game);
             

@@ -25,7 +25,7 @@ open class XWebSocketConfigOLD : AbstractWebSocketMessageBrokerConfigurer() {
 
 	override fun configureMessageBroker(registry: MessageBrokerRegistry?) {
 		logger.info("Message info configured")
-		registry!!.enableSimpleBroker("/toClient")
+		registry!!.enableSimpleBroker("/topic", "/queue")
 		registry.setApplicationDestinationPrefixes("/toServer")
 	}
 
