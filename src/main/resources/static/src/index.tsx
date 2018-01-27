@@ -181,7 +181,7 @@ class ContainerView extends React.Component {
             this.wsClient.subscribe('/user/topic/newGame', function (player: any) {
                 console.log("THIS SHOULD BE EXECUTED NEW GAME");
                 MsgHandler.newGame(JSON.parse(player.body), this.game);
-            
+
             }.bind(this));
             this.wsClient.subscribe('/topic/join', function (field: any) {
                 console.log("THIS SHOULD BE EXECUTED");
