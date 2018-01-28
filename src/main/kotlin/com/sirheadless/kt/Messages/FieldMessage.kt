@@ -1,5 +1,7 @@
 package com.sirheadless.kt.Messages
 
+import com.sirheadless.kt.PlayerType
+
 /**
  * Created by
  * User: creuter
@@ -8,6 +10,10 @@ package com.sirheadless.kt.Messages
  * Test
  */
 
-data class FieldMessage(val field: Int, val player: String) {
-	constructor() : this(field = 0, player = "")
+data class FieldMessage(val field: Int, val player: String?){
+
+
+
+	constructor() : this(field = -1, player = "")
+
 }

@@ -9,11 +9,12 @@ export class Game implements Interfaces.IGame {
     private _player: string;
     private _started: boolean;
     private _status: string;
+    private _oppponentName: string;
+    private _error: string;
 
     //constructor 
     constructor() {
         this._status = "Waiting for opponent!";
-        this.setOneField(1, "x");
     }
 
     startNewGame(symbol: string) {
@@ -74,6 +75,12 @@ export class Game implements Interfaces.IGame {
     get started(): boolean {
         return this._started;
     }
+    get oppponentName(): string {
+        return this._oppponentName;
+    }
+    get error(): string {
+        return this._error;
+    }
 
     set status(status: string) {
         this._status = status;
@@ -96,6 +103,11 @@ export class Game implements Interfaces.IGame {
     set started(started: boolean){
         this._started = started;
     }
-
+    set oppponentName(oppponentName: string){
+        this._oppponentName = oppponentName;
+    }
+    set error(error: string){
+        this._error = error;
+    }
 };
 // }

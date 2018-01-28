@@ -13,6 +13,7 @@ export namespace Interfaces {
         player: string,
         started: boolean,
         status: string,
+        error: string,
 
 
         setOneField(fieldNr: number, symbol: string): boolean,
@@ -27,15 +28,33 @@ export namespace Interfaces {
     }
 
     interface IWonMsg {
-        winRow: number[],
+        winnerRow: number[],
         winner: string,
     }
 
     interface INewGame {
-        symbol: string,
+        player: string,
+        oppponentName: string,
     }
 
     interface INewOpponent {
         symbol: string,
+    }
+
+    interface IGameOver{
+        winnerRow: number[],
+        winner: string,
+        full: boolean,
+    }
+
+    interface IError{
+        error: string,
+    }
+
+    interface ILoadGame{
+        board: number[],
+        player: string,
+        opponentName: string,
+        turn: string,
     }
 }

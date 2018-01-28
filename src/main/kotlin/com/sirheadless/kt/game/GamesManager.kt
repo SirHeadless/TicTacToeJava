@@ -1,5 +1,7 @@
 package com.sirheadless.kt.game
 
+import java.util.Collections
+
 /**
  * Created by
  * User: creuter
@@ -11,41 +13,55 @@ class GamesManager {
 
 
 	companion object {
-
-
 		private var waitingUser: String? = null
 
-		val games : MutableList<Game>  = mutableListOf();
+		val games: MutableList<Game> = mutableListOf();
 
-		fun addUserToGame(user : String) : Game?{
-			var game : Game? =  userAlreadyInGame(user)
-			if(game != null) {
+		fun addUserToGame(user: String): Game? {
+			var game = getActiveGameOfUser(user)
+			if (game != null || waitingUser.equals(user)) {
 				return null
 			}
 
-			if (waitingUser != null ){
-                var newGame = Game(waitingUser!!, user)
+			waitingUser?.let {
+				var newGame = Game(waitingUser!!, user)
 				games.add(newGame)
-//				TestController.sendPlayersGameStarts(newGame)
-//				var test =  TestController()
-//				test.sendPlayersGameStarts(newGame)
-                return newGame
-			} else {
+				waitingUser = null
+				return newGame
+			} ?: run {
 				waitingUser = user
 			}
-            return null
+			return null
 		}
 
-		fun findGameOfUser(user: String) : Game? {
-			return games.stream().filter {g -> g.hasUser(user)}.findFirst().orElse(null)
+		fun findGameOfUser(user: String): Game? {
+			return games.stream().filter { g -> g.hasUser(user) }.findFirst().orElse(null)
 
 		}
 
-		private fun userAlreadyInGame(user : String ): Game? {
+		private fun userAlreadyInGame(user: String): Game? {
 			return games.firstOrNull { it.getAllUser().contains(user) }
 		}
 
+		private fun getActiveGameOfUser(user: String) : Game? {
+			var game: Game? = userAlreadyInGame(user)
+			game?.let{
+				if (game.getGameStatus().isOver()){
+					games.remove(game)
+					return null
+				}
+				return game
+			}
+			return null
+		}
 
+		fun resetGame(game: Game) : Boolean{
+			if (!game.getGameStatus().isOver()) {
+				return false
+			}
+			Collections.replaceAll(games,game, Game(game.playerO, game.playerX))
+			return true
+		}
 	}
 
 

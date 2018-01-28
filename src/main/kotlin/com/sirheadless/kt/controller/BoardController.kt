@@ -1,14 +1,11 @@
 package com.sirheadless.kt.controller
 
-import com.sirheadless.kt.Board
-import com.sirheadless.kt.Messages.FieldMessage
-import com.sirheadless.kt.Messages.NewGameMessage
-import com.sirheadless.kt.Player
+import com.sirheadless.kt.*
+import com.sirheadless.kt.Messages.*
 import com.sirheadless.kt.game.Game
 import com.sirheadless.kt.game.GamesManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.*
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.annotation.SubscribeMapping
 import org.springframework.stereotype.*
@@ -37,36 +34,60 @@ constructor(private val messagingTemplate: SimpMessageSendingOperations) {
     @SubscribeMapping("/join")
     fun join(): FieldMessage {
         logger.info("Somebody joined !!!")
-        val returnMessage: FieldMessage = FieldMessage(9, "x")
+        val returnMessage: FieldMessage = FieldMessage(9, PlayerType.PLAYERX.toString())
         return returnMessage
     }
 
 
     @MessageMapping("/setField")
-    @SendTo("/topic/setField")
-    fun setField(headerAccessor: SimpMessageHeaderAccessor, fieldMessage: FieldMessage): FieldMessage {
-        board.setField(fieldMessage.field.toInt(), Player.PLAYERX)
-        val returnMessage: FieldMessage = FieldMessage(fieldMessage.field, "x")
-        logger.info(returnMessage.toString())
-        return returnMessage
+    fun setField(principal: Principal, fieldMessage: FieldMessage) {
+        var game : Game? = GamesManager.findGameOfUser(principal.name)
+        if (game == null) {
+            messagingTemplate.convertAndSendToUser(principal.name, "/topic/error", "Your game was could not be found!")
+            return
+        }
+        if(game.setField(fieldMessage)) {
+            val fieldMessage= FieldMessage(fieldMessage.field, fieldMessage.player)
+            game?.let{ sendMessageToPlayersInGame(fieldMessage, "/topic/setField", it)}
+        } else {
+            messagingTemplate.convertAndSendToUser(principal.name, "/topic/error", ErrorMessage("It is not your turn my little fellow!"))
+            return
+        }
+
+        var gameStatus = game.getGameStatus()
+        if (gameStatus.isOver()) {
+            val winnerMessage = GameOverMessage(gameStatus)
+            game?.let{sendMessageToPlayersInGame(winnerMessage, "/topic/gameOver", it)}
+        }
+
     }
 
     @MessageMapping("/newGame")
-    @SendTo("/topic/newGame")
-    fun newGame(): String {
-        logger.info("New game")
-        return ""
+    fun newGame(principal: Principal) {
+        var game: Game? = GamesManager.findGameOfUser(principal.name)
+        game?.let{
+            GamesManager.resetGame(it)
+            sendMessageToPlayersInGame(NewGameMessage(PlayerType.PLAYERX.symbol, it.playerO), NewGameMessage(PlayerType.PLAYERO.symbol, it.playerX),"/topic/newGame", it)
+        } ?: run {
+            messagingTemplate.convertAndSendToUser(principal.name, "/topic/error", ErrorMessage("You have no game right now. Check for new opponent"))
+        }
     }
 
     @MessageMapping("/findOpponent")
-    fun findOpponent(principal: Principal): String {
+    fun findOpponent(principal: Principal) {
         logger.info("Looking for opponent for ${principal.name}")
         var game: Game? = GamesManager.addUserToGame(principal.name)
-        if (game != null)  {
-            messagingTemplate.convertAndSendToUser(game!!.playerX, "/topic/newGame", NewGameMessage("x", game!!.playerY))
-            messagingTemplate.convertAndSendToUser(game!!.playerY, "/topic/newGame", NewGameMessage("y", game!!.playerX))
-        }
-        return ""
+        game?.let { sendMessageToPlayersInGame(NewGameMessage(PlayerType.PLAYERX.symbol, it.playerO), NewGameMessage(PlayerType.PLAYERO.symbol, it.playerX), "/topic/newGame", it) }
+    }
+
+    private fun sendMessageToPlayersInGame(message : Any, destination: String, game: Game) {
+            messagingTemplate.convertAndSendToUser(game!!.playerX, destination, message)
+            messagingTemplate.convertAndSendToUser(game!!.playerO, destination, message)
+    }
+
+    private fun sendMessageToPlayersInGame(messagePlayerX: Any, messagePlayerY: Any, destination : String , game: Game) {
+            messagingTemplate.convertAndSendToUser(game!!.playerX, destination, messagePlayerX)
+            messagingTemplate.convertAndSendToUser(game!!.playerO, destination, messagePlayerY)
     }
 
 }
