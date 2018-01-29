@@ -7,6 +7,9 @@ package com.sirheadless.kt.Messages
  * Time: 8:25 PM
  * Test
  */
-data class LoadGameMessage(val board: List<Int>, val player: String, val opponentName: String, val turn: String) {
+data class LoadGameMessage(val loadGame: Boolean, val board: Array<String?>?, val player: String?, val opponentName: String?, val turn: String?) {
 
+	constructor(loadGame: Boolean) : this(loadGame, null, null ,null, null) {
+
+	}
 }

@@ -2,6 +2,8 @@ package com.sirheadless.kt
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.*
+import org.springframework.messaging.simp.SimpMessageSendingOperations
 
 /**
  * Created by
@@ -20,7 +22,19 @@ open class Application {
 		fun main(args: Array<String>) {
 			SpringApplication.run(Application::class.java, *args )
 		}
+
+//		@Configuration
+//		internal open class WebSocketHandlersConfig {
+//
+//			@Bean
+//			open fun webSocketConnectHandler(messagingTemplate: SimpMessageSendingOperations): WebSocketConnectHandler {
+//				return WebSocketConnectHandler(messagingTemplate)
+//			}
+//
+//		}
+
 	}
+
 
 
 

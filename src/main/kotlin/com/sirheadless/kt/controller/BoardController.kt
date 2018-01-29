@@ -7,7 +7,7 @@ import com.sirheadless.kt.game.GamesManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.*
 import org.springframework.messaging.simp.SimpMessageSendingOperations
-import org.springframework.messaging.simp.annotation.SubscribeMapping
+import org.springframework.messaging.simp.annotation.*
 import org.springframework.stereotype.*
 
 import java.security.Principal
@@ -31,11 +31,13 @@ constructor(private val messagingTemplate: SimpMessageSendingOperations) {
     @Autowired
     lateinit var board: Board
 
-    @SubscribeMapping("/join")
-    fun join(): FieldMessage {
-        logger.info("Somebody joined !!!")
-        val returnMessage: FieldMessage = FieldMessage(9, PlayerType.PLAYERX.toString())
-        return returnMessage
+    @SubscribeMapping("/connect")
+    @SendToUser("/topic/loadGame")
+    fun join(principal: Principal) : LoadGameMessage {
+        var game: Game? = GamesManager.findActiveGameOfUser(principal.name)
+        game?.let{
+            return  LoadGameMessage(true,it.getBoardWithString(), it.getSymbolForPlayer(principal.name), it.getOpponentForPlayer(principal.name), it.turn.symbol)        }
+        return LoadGameMessage(false)
     }
 
 
@@ -79,6 +81,16 @@ constructor(private val messagingTemplate: SimpMessageSendingOperations) {
         var game: Game? = GamesManager.addUserToGame(principal.name)
         game?.let { sendMessageToPlayersInGame(NewGameMessage(PlayerType.PLAYERX.symbol, it.playerO), NewGameMessage(PlayerType.PLAYERO.symbol, it.playerX), "/topic/newGame", it) }
     }
+
+	@MessageMapping("/loadGame")
+	fun loadGame(principal: Principal) {
+		var game: Game? = GamesManager.findGameOfUser(principal.name)
+        game?.let{
+		    var loadGameMessage = LoadGameMessage(true, it.getBoardWithString(), it.getSymbolForPlayer(principal.name), it.getOpponentForPlayer(principal
+                    .name), it.turn.symbol)
+            sendMessageToPlayersInGame(loadGameMessage, "/topic/loadGame", it)
+        }
+	}
 
     private fun sendMessageToPlayersInGame(message : Any, destination: String, game: Game) {
             messagingTemplate.convertAndSendToUser(game!!.playerX, destination, message)

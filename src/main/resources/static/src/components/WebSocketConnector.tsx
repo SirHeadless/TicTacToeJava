@@ -52,9 +52,9 @@ export class WebSocketConnector {
     }
 
     sendField(fieldNr: number) {
-        this.stompClient.send("/toServer/setField", {}, JSON.stringify({'field': fieldNr}));
+        this.stompClient.send("/app/setField", {}, JSON.stringify({'field': fieldNr}));
     }
     sendNewGame() {
-        this.stompClient.send("/toServer/newGame");
+        this.stompClient.send("/app/newGame");
     }
 }

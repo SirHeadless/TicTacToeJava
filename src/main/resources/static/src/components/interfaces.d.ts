@@ -20,6 +20,10 @@ export namespace Interfaces {
         toogleTurn(): void,
         getNext(symbol:string): string,
         startNewGame(symbol: string):void,
+        loadGame(board: string[],
+            player: string,
+            opponentName: string,
+            turn: string,): boolean,
     }
 
     interface IFieldMessage {
@@ -52,7 +56,8 @@ export namespace Interfaces {
     }
 
     interface ILoadGame{
-        board: number[],
+        loadGame: Boolean,
+        board: string[],
         player: string,
         opponentName: string,
         turn: string,

@@ -71,4 +71,10 @@ export namespace MsgHandler {
     export function setErrorMessage(msg: Interfaces.IError, game: Interfaces.IGame){
         game.error = msg.error;
     }
+
+    export function setGame(msg: Interfaces.ILoadGame, game: Interfaces.IGame){
+        if (msg.loadGame) {
+            game.loadGame(msg.board, msg.player, msg.opponentName, msg.turn)
+        }
+    }
 }

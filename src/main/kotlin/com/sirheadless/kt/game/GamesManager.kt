@@ -39,6 +39,11 @@ class GamesManager {
 
 		}
 
+		fun findActiveGameOfUser(user: String): Game? {
+			return games.stream().filter { g -> g.hasUser(user) && !g.getGameStatus().isOver() }.findFirst().orElse(null)
+
+		}
+
 		private fun userAlreadyInGame(user: String): Game? {
 			return games.firstOrNull { it.getAllUser().contains(user) }
 		}
@@ -47,7 +52,7 @@ class GamesManager {
 			var game: Game? = userAlreadyInGame(user)
 			game?.let{
 				if (game.getGameStatus().isOver()){
-					games.remove(game)
+					removeGame(game)
 					return null
 				}
 				return game
@@ -61,6 +66,10 @@ class GamesManager {
 			}
 			Collections.replaceAll(games,game, Game(game.playerO, game.playerX))
 			return true
+		}
+
+		fun removeGame(game: Game) : Boolean{
+			return games.remove(game)
 		}
 	}
 

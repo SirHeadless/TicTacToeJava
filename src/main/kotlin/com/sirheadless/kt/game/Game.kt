@@ -45,4 +45,26 @@ class Game(val playerX: String, val playerO: String){
 	private fun toogleTurn() {
 		turn = if (turn.equals(PlayerType.PLAYERX)) PlayerType.PLAYERO else PlayerType.PLAYERX
 	}
+
+	fun getBoardWithString() : Array<String?> {
+		var boardString = arrayOfNulls<String?>(9)
+		for (index in 0 .. (this.board.fields.size - 1)) {
+			boardString[index] = this.board.fields[index]?.symbol
+		}
+		return boardString
+	}
+
+	fun getSymbolForPlayer(user: String) : String? {
+		if (!getAllUser().contains(user)) {
+			return null
+		}
+		return if (playerX.equals(user) ) PlayerType.PLAYERX.symbol else PlayerType.PLAYERO.symbol
+	}
+
+	fun getOpponentForPlayer(user: String) : String? {
+		if (!getAllUser().contains(user)) {
+			return null
+		}
+		return if (playerX.equals(user) ) this.playerO else this.playerX
+	}
 }

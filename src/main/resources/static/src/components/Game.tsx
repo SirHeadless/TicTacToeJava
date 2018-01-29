@@ -17,6 +17,18 @@ export class Game implements Interfaces.IGame {
         this._status = "Waiting for opponent!";
     }
 
+    loadGame(board: string[],
+        player: string,
+        opponentName: string,
+        turn: string,): boolean{
+            
+        this.startNewGame(player)
+        this.board = board
+        this.oppponentName = opponentName
+        this.turn = turn 
+        return true
+    }
+
     startNewGame(symbol: string) {
         this._board = new Array(9);
         this._finished = false;

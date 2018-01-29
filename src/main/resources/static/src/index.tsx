@@ -23,7 +23,7 @@ class Field extends React.Component<any, any> {
 
     handleClick() {
         console.log("Board: " + this.props.game.board)
-        this.props.wsClient.send("/toServer/setField", {}, JSON.stringify({'field': this.keyNr, 'player': this.props.game.player}));
+        this.props.wsClient.send("/app/setField", {}, JSON.stringify({'field': this.keyNr, 'player': this.props.game.player}));
         this.setState({game : this.props.game})
     }
     render() {
@@ -47,7 +47,7 @@ class Title extends React.Component<any, any> {
 
 class FindOpponentButton extends React.Component<any, any> {
     handleClick() {
-        this.props.wsClient.send("/toServer/findOpponent");
+        this.props.wsClient.send("/app/findOpponent");
     }
     render() {
         return (
@@ -62,7 +62,7 @@ class FindOpponentButton extends React.Component<any, any> {
 
 class NewGameButton extends React.Component<any, any> {
     handleClick() {
-        this.props.wsClient.send("/toServer/newGame");
+        this.props.wsClient.send("/app/newGame");
         this.props.game.newGame()
     }
     render() {
@@ -75,6 +75,22 @@ class NewGameButton extends React.Component<any, any> {
         return (
             <div>
                 {button}
+            </div>
+        )
+    }
+}
+
+class TestLoadGameButton extends React.Component<any, any> {
+    handleClick() {
+        this.props.wsClient.send("/app/loadGame");
+    }
+
+    render() {
+        return (
+            <div>
+                <button onClick={this.handleClick.bind(this)}>
+                Load Game
+                </button>
             </div>
         )
     }
@@ -189,6 +205,23 @@ class ContainerView extends React.Component {
                 console.log(error.body);
                 MsgHandler.setErrorMessage(JSON.parse(error.body), this.game);
                 this.setState(this.game);
+            }.bind(this));
+            this.wsClient.subscribe('/user/topic/loadGame', function (gameToLoad: any) {
+                console.log(gameToLoad.body);
+                MsgHandler.setGame(JSON.parse(gameToLoad.body), this.game);
+                this.setState(this.game);
+            }.bind(this));
+            this.wsClient.subscribe('/user/topic/connect', function (gameToLoad: any) {
+                console.log("Received test call ME");
+            }.bind(this));
+            this.wsClient.subscribe('/topic/connect', function (gameToLoad: any) {
+                console.log("Received test call ALL");
+            }.bind(this));
+            this.wsClient.subscribe('/app/connect', function (gameToLoad: any) {
+                console.log("Received test call ALL");
+            }.bind(this));
+            this.wsClient.subscribe('/user/app/connect', function (gameToLoad: any) {
+                console.log("Received test call ME");
             }.bind(this));
         }.bind(this))
 
